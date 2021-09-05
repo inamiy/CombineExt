@@ -39,18 +39,35 @@ public extension Future {
     }
 }
 
-// TODO: AsyncStream is not bundled with Xcode yet
-//@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-//public extension Publisher {
-//    func toAsync() async -> AsyncStream<Output> where Failure == Never {
-//        var subscriptions = [AnyCancellable]()
-//
-//        return AsyncStream(Output.self) { [weak self] continuation in
-//            self?
-//                .sink { output in continuation.yield(output) }
-//                .store(in: &subscriptions)
-//        }
-//    }
-//}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+public extension Publisher {
+    func toAsync() -> AsyncStream<Output> where Failure == Never {
+        AsyncStream(Output.self) { continuation in
+            var subscriptions = [AnyCancellable]()
+
+            self
+                .sink(
+                    receiveCompletion: { completion in
+                        switch completion {
+                        case .finished:
+                            continuation.finish()
+                        case let .failure(error):
+                            continuation.yield(with: .failure(error))
+                        }
+                    },
+                    receiveValue: { output in
+                        continuation.yield(output)
+                    }
+                )
+                .store(in: &subscriptions)
+
+            let subs = subscriptions
+
+            continuation.onTermination = { @Sendable _ in
+                _ = subs
+            }
+        }
+    }
+}
 
 #endif
