@@ -11,11 +11,10 @@ let package = Package(
         .library(name: "CombineExt", targets: ["CombineExt"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/combine-schedulers", from: "0.1.2"),
     ],
     targets: [
         .target(name: "CombineExt", dependencies: [], path: "Sources"),
-        .testTarget(name: "CombineExtTests", dependencies: ["CombineExt", "CombineSchedulers"], path: "Tests"),
+        .testTarget(name: "CombineExtTests", dependencies: ["CombineExt"], path: "Tests"),
     ],
     swiftLanguageVersions: [.v5]
 )
