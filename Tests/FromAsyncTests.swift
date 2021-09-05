@@ -47,7 +47,7 @@ final class FromAsyncTests: XCTestCase {
         // Given: a non throwable async function
         // When: making the publisher from the function and subscribing to it with a priority
         let cancellable = Publishers
-            .fromAsync(priority: .userInitiated) { () async -> String in
+            .fromTask(priority: .userInitiated) { () async -> String in
                 receivedQueue = DispatchQueue.currentLabel
                 return ""
             }
@@ -92,7 +92,7 @@ final class FromAsyncTests: XCTestCase {
         // Given: a throwable async function
         // When: making the publisher from the function and subscribing to it with a priority
         let cancellable = Publishers
-            .fromThrowableAsync(priority: .userInitiated) { () async throws -> String in
+            .fromThrowableTask(priority: .userInitiated) { () async throws -> String in
                 receivedQueue = DispatchQueue.currentLabel
                 return ""
             }
